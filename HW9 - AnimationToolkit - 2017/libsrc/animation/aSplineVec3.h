@@ -11,7 +11,7 @@ class AInterpolatorVec3;
 class ASplineVec3 
 {
 public:
-	enum InterpolationType { LINEAR, CUBIC_BERNSTEIN, CUBIC_CASTELJAU, CUBIC_MATRIX, CUBIC_HERMITE, CUBIC_BSPLINE };
+	enum InterpolationType { LINEAR, CUBIC_BERNSTEIN, CUBIC_CASTELJAU, CUBIC_MATRIX, CUBIC_HERMITE, CUBIC_BSPLINE, QUINTIC_BERNSTEIN };
     typedef std::pair<double, vec3> Key;
 
 public:
@@ -189,7 +189,36 @@ public:
 
 protected:
     std::vector<double> mKnots;
+	double ABSplineInterpolatorVec3::N( int n, int j, double t);
+	double ABSplineInterpolatorVec3::dN( int n, int j, double t, int l);
 };
 
+
+/********************Quantic Catmul-Rom Spline***************
+
+class AQuinticInterpolatorVec3 : public AInterpolatorVec3
+{
+public:
+	virtual ~AQuinticInterpolatorVec3() {}
+	virtual void computeControlPoints(
+		const std::vector<ASplineVec3::Key>& keys,
+		std::vector<vec3>& ctrlPoints,
+		vec3& startPt, vec3& endPt);
+
+protected:
+	AQuinticInterpolatorVec3(ASplineVec3::InterpolationType t) : AInterpolatorVec3(t) {}
+};
+
+class AQuinticBernsteinInterpolatorVec3 : public AQuinticInterpolatorVec3
+{
+public:
+	AQuinticBernsteinInterpolatorVec3() : AQuinticInterpolatorVec3(ASplineVec3::QUINTIC_BERNSTEIN) {}
+	virtual vec3 interpolateSegment(
+		const std::vector<ASplineVec3::Key>& keys,
+		const std::vector<vec3>& ctrlPoints,
+		int segment, double u);
+};
+
+*/
 
 #endif

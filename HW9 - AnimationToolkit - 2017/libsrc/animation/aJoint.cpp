@@ -205,10 +205,15 @@ void AJoint::updateTransform()
 	mLocal2Global = ATransform();
 
 	// TODO: Compute mLocal2Global for the joint, which allows vectors to be transformed from local coordinates to world coordinates
-
+	if(mParent == NULL)
+		mLocal2Global = mLocal2Parent;
+	else
+		mLocal2Global = mParent->mLocal2Global * mLocal2Parent;
 
 	// TODO: Also update mLocal2Global for each of the children
-
+	for(AJoint* child:mChildren){
+		child->updateTransform();
+	}
 
 }
 

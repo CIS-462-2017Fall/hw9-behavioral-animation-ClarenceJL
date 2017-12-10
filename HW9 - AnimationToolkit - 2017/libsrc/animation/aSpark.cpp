@@ -5,9 +5,13 @@
 #include "aSpark.h"
 #include <math.h>
 
+const float PI = 3.14159265358;
+
 #ifndef GRAVITY
 #define GRAVITY 9.8f
 #endif
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -93,7 +97,6 @@ void ASpark::update(float deltaT, int extForceMode)
 
 	resolveCollisions();
 	
-	
 }
 
 
@@ -114,18 +117,15 @@ void ASpark::computeForces(int extForceMode)
 	if (extForceMode & WIND_ACTIVE)
 	{
 		//TODO: Add your code here
-
-
-	
+		addForce(m_windForce);
 
 	}
 
 	if (extForceMode & DRAG_ACTIVE)
 	{
 		//TODO: Add your code here
-
-
-;
+		float c = 1.5; // constant for drag force
+		addForce(- c*m_Vel);
 	}
 
 
@@ -133,8 +133,16 @@ void ASpark::computeForces(int extForceMode)
 	if (extForceMode & ATTRACTOR_ACTIVE)
 	{
 		//TODO: Add your code here
-
-
+		vec3 dir = m_attractorPos - m_Pos;
+		float r = dir.Length();
+		if (r < 1e-10) {
+			r = 1e-10;
+			dir = { 0,0,0 };
+		}
+		else
+			dir.Normalize();
+		float magnitude = 1000.0/(r*r);
+		addForce(m_mass * magnitude * dir);
 	
 	}
 
@@ -142,17 +150,40 @@ void ASpark::computeForces(int extForceMode)
 	if (extForceMode & REPELLER_ACTIVE)
 	{
 		//TODO: Add your code here
-
-
+		vec3 dir = m_Pos - m_repellerPos;
+		float r = dir.Length();
+		if (r < 1e-10) {
+			r = 1e-10;
+			dir = { 0,0,0 };
+		}
+		else
+			dir.Normalize();
+		float magnitude = 1000.0/(r*r);
+		addForce(m_mass * magnitude * dir);
 	}
+
 
 	// random force
 	if (extForceMode & RANDOM_ACTIVE)
 	{
+		
 		//TODO: Add your code here
-
-
-
+		vec3 rand_dir;
+		float theta = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * PI * 2.0; //random force direction between 0~2*pi
+		rand_dir[0] = cos(theta);
+		rand_dir[1] = sin(theta);
+		rand_dir[2] = 0.0;
+		/*
+		//3D random direction
+		float z = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2.0 - 1.0;
+		rand_dir[0] = sqrt(1-z*z)*cos(theta);
+		rand_dir[1] = sqrt(1-z*z)*sin(theta);
+		rand_dir[2] = z;
+		rand_dir.Normalize();
+		*/
+		float rand_magnitude = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 250; //random force magnitude between 0~250
+		addForce(rand_magnitude * rand_dir);
+		
 	}
 
 }
@@ -160,6 +191,12 @@ void ASpark::computeForces(int extForceMode)
 void ASpark::resolveCollisions()
 // resolves collisions of the spark with the ground
 {
-	//TODO: Add  code here that reverses the y value of the spark velocity vector when the y position value of the spark is < 0
+	//TODO: Add  code here that reverses the y value of the spark velocity vector 
+	//      when the y position value of the spark is < 0
+	if(m_state[1] < 0){
+		m_state[4] = - m_COR*m_state[4]; //turn the velocity in y direction
+		m_Vel[1] = m_state[4];
+		m_stateDot[1] = m_state[4];
+	}
 
 }

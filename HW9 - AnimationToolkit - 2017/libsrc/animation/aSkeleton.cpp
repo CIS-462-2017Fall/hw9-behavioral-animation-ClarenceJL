@@ -1,4 +1,5 @@
 #include "aSkeleton.h"
+#include <queue>
 
 #pragma warning(disable : 4018)
 
@@ -121,7 +122,8 @@ void ASkeleton::update()
 {
 	if (!mRoot) return; // Nothing loaded
 
-	// TODO: Update  Joint Transforms recursively, starting at the root
+	// TODO: Update Joint Transforms recursively, starting at the root
+	mRoot->updateTransform();
 
 }
 

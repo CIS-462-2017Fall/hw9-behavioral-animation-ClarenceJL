@@ -20,7 +20,6 @@ class IKController;
 
 
 #ifdef BEHAVIOR
-
 	class BehaviorController;
 #endif
 

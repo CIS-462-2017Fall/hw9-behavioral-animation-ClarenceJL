@@ -1096,7 +1096,7 @@ matrixT::ValOut() _NO_THROW
 #endif
 
 //typedef matrix<double> CMatrix;  // ***SHL change this line to use SvzValues
-typedef matrix<SvzValue> CMatrix;  
+//typedef matrix<SvzValue> CMatrix;  
 
 #if !defined(_MSC_VER)
 #define _MSC_EXTENSIONS      // To include overloaded abs function definitions!

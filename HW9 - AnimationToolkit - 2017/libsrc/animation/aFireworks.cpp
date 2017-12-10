@@ -96,11 +96,20 @@ void AFireworks::fireRocket(float posx, float* color)
 	float stateVals[12] = { 0.0 };
 	
 	//TODO: Add your code here
-
-
-
-
-
+	//position
+	stateVals[0] = posx;
+	stateVals[1] = posy;
+	//velocity
+	float speed = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 60.0 + 60.0;
+	float theta = ((static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 30.0 + 80.0)*RAD;
+	stateVals[3] = speed * cos(theta);
+	stateVals[4] = speed * sin(theta);
+	//force(gravity only)
+	stateVals[7] = -GRAVITY*50;
+	//mass
+	stateVals[9] = 50;
+	//time span
+	stateVals[10] = 10;
 
 	newRocket->setState(stateVals);
 	newRocket->setAttractor(m_attractorPos);
@@ -122,7 +131,8 @@ void AFireworks::explode(float rocketPosx, float rocketPosy, float rocketPosz,
 	*  Input: float velx. X velocity of rocket when sparks are generated.
 	*		   float vely. Y velocity of rocket when sparks are generated.
 	*		   float velz. Z velocity of rocket when sparks are generated.
-	*         float* color. color[0], color[1] and color[2] are the RGB color of the rocket. It will also be the color of the sparks it generates.
+	*         float* color. color[0], color[1] and color[2] are the RGB color of the rocket. 
+	*         It will also be the color of the sparks it generates.
 	*
 	*  In this function, you want to generate a number of sparks that are uniformily distributed on a ring at [posx, posy, posz]
 	*  then append them to the sparks vector using a push_back function call. Since this is a 2D demo you can set posz = 0.0
@@ -136,7 +146,7 @@ void AFireworks::explode(float rocketPosx, float rocketPosy, float rocketPosz,
 	*      the direction of the initial velocity of each spark should be uniformly distributed between 0 and 360 degrees
 	*      the total velocity of the spark at the time of its creation is the sum of the rocket velocity and the intial spark velocity
 	*  force on every spark is just the gravity.
-	*  spark mass is 50.
+	*  spark mass is 1.
 	*  Total timeToLive of every spark is 10.
 	*/
 		
@@ -149,20 +159,27 @@ void AFireworks::explode(float rocketPosx, float rocketPosy, float rocketPosz,
 	float velocity = MAXVELOCITY;
 
 	// TODO: Add  code here to randomize the number of sparks and their initial velocity
-	 
+	numSparks = rand()%51 + 10;
+	velocity = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 20.0 + 20.0;
+	stateVals[0] = rocketPosx;
+	stateVals[1] = rocketPosy;
+	stateVals[2] = rocketPosz;
+	stateVals[4] = -1*GRAVITY;
+	stateVals[9] = 1;
+	stateVals[10] = 10;
 
+	stateVals[5] = rocketVelz;
+
+	float dtheta = 2*PI/(float)(numSparks);
 
 	for (int i = 0; i < numSparks; i++)
 	{
 		ASpark* newSpark = new ASpark(rocketColor);
 		// TODO: Add your code here
+		//update velocity for each spark
 
-	
-
-
-
-
-
+		stateVals[3] = rocketVelx + velocity*cos(dtheta*i);
+		stateVals[4] = rocketVely + velocity*sin(dtheta*i);
 
 		newSpark->setState(stateVals);
 		newSpark->setAttractor(m_attractorPos);
@@ -201,16 +218,21 @@ void AFireworks::update(float deltaT, int extForceMode)
 	index = 0;
 
 	// Add you code here
-
-
-
-
-
-
-
-
-
-
+	for(unsigned int i = 0; i < rockets.size(); ++i){
+		pRocket = rockets[index];
+		if(!pRocket->m_alive){
+			rockets.erase(rockets.begin() + index);
+			delete pRocket;
+		}
+		else{
+			if(pRocket->m_explosionCount > 0){
+				explode(pRocket->m_Pos[0], pRocket->m_Pos[1], pRocket->m_Pos[2], 
+	                    pRocket->m_Vel[0], pRocket->m_Vel[1], pRocket->m_Vel[2], pRocket->m_color);
+				pRocket->m_explosionCount--;
+			}
+			index++;
+		}
+	}
 
 
 	//Step 3. update valid sparks and rockets.

@@ -42,12 +42,12 @@ void AParticle::setState(vector<float>& newState)
 		m_state[i] = newState[i];
 	
 	m_Pos[0] = m_state[0];
-	m_Pos[1] = m_state[1]; 
-	m_Pos[2] = m_state[2];
+	m_Pos[1] = m_state[2]; 
+	m_Pos[2] = m_state[3];
 
-	m_Vel[0] = m_state[3];
-	m_Vel[1] = m_state[4];
-	m_Vel[2] = m_state[5];
+	m_Vel[0] = m_state[4];
+	m_Vel[1] = m_state[5];
+	m_Vel[2] = m_state[6];
 
 }
 
@@ -159,15 +159,30 @@ void AParticle::computeForces(int mode)
 
 void AParticle::computeDynamics(vector<float>& state, vector<float>& stateDot, float deltaT)
 {
+	/* State vector
+	*	State vector:
+	*  0 : position x
+	*  1 : position y
+	*  2 : position z
+	*  3 : velocity x
+	*  4 : velocity y
+	*  5 : velocity z
+	*  6 : force x
+	*  7 : force y
+	*  8 : force z
+	*  9 : mass
+	*  10 : timeToLive
+	*  11 : not defined
+	*/
 	//TODO: Add your code here
-
+	//update acceleration
+	for (int i = 3; i < 6; ++i) 
+		stateDot[i] = state[i + 3] / state[9];
+	//update velocity
+	for (int i = 0; i < 3; ++i)
+		stateDot[i] = state[i + 3];
 	
-
-
-
-
-
-
+	state[10] -= deltaT;
 }
 
 void AParticle::updateState(float deltaT, int integratorType)
@@ -176,21 +191,30 @@ void AParticle::updateState(float deltaT, int integratorType)
  	computeDynamics(m_state, m_stateDot, deltaT);
 
 	//TODO:  Add your code here to update the state using EULER and Runge Kutta2  integration
+	
 	switch (integratorType)
 	{
 		case EULER:
 			// Add your code here
-
-
-
+			for (int i = 0; i < 6; ++i)
+				m_state[i] += m_stateDot[i] * deltaT; //update position and velocity
 			break;
 
 		case RK2:
 		{
-			
 			// Add your code here
-
-
+			vector<float> x_p(11), xdot_p(6);
+			//compute x_p(k+1)
+			for (int i = 0; i < 6; ++i)
+				x_p[i] = m_state[i] + m_stateDot[i] * deltaT;
+			for (int i = 6; i < 11; ++i)
+				x_p[i] = m_state[i]; //copy force, mass and rest
+			//compute xdot_p(k+1)
+			computeDynamics(x_p, xdot_p, deltaT);
+			//update x
+			for (int i = 0; i < 6; ++i) 
+				m_state[i] += (m_stateDot[i] + xdot_p[i])*deltaT / 2;
+			
 			break;
 		}
 	}
@@ -212,7 +236,7 @@ void AParticle::update(float deltaT, int forceMode)
 		return;
 	}
 	computeForces(forceMode);
-    updateState(deltaT, EULER);
+    updateState(deltaT, RK2);
 	
 }
 

@@ -57,7 +57,7 @@ public:
 
 	bool IKSolver_Limb(int endJointID, const ATarget& target);
 	bool IKSolver_CCD(int endJointID, const ATarget& target);
-	bool IKSolver_CCD2(int endJointID, const ATarget& target);
+	//bool IKSolver_CCD2(int endJointID, const ATarget& target);
 	bool IKSolver_PseudoInv(int endJointID, const ATarget& target);
 	bool IKSolver_Other(int endJointID, const ATarget& target);
 
@@ -70,6 +70,8 @@ protected:
 	bool mValidChain = true;
 	bool mvalidLimbIKchains;
 	bool mvalidCCDIKchains;
+	bool mvalidPseudoInvIKchains;
+	bool mvalidOtherIKchains;
 
     AIKchain mRhandIKchain; // IK chain of joint pointers starting with Rhand joint 
 	AIKchain mLhandIKchain; // IK chain of joint pointers starting with Lhand joint     
@@ -78,13 +80,17 @@ protected:
 	AIKchain mIKchain;  // IK chain of joint pointers starting with end joint 
 
 	int createLimbIKchains();
-	int createCCDIKchains();
+	int createCCDIKchains(); // use this for the two extra methods as well
 
-	AIKchain createIKchain(int endJointID, int baseJointID, int chainSize, ASkeleton* pSkeleton);
+	//AIKchain createIKchain(int endJointID, int baseJointID, int chainSize, ASkeleton* pSkeleton);
 	AIKchain createIKchain(int endJointID, int desiredChainSize, ASkeleton* pSkeleton);
-
+	
 	int computeLimbIK(ATarget target, AIKchain& IKchain, const vec3 axis, ASkeleton* pIKSkeleton);
 	int computeCCDIK(ATarget target, AIKchain&, ASkeleton* pIKSkeleton);
+	/*extra compute IK functions*/
+	int computePsudoInvIK(ATarget target, AIKchain& IKchain, ASkeleton* pIKSkeleton);
+	int computeOtherIK(ATarget target, AIKchain& IKchain, const vec3 midJointAxis, ASkeleton* pIKSkeleton);
+	/*extra of new compute IK functions*/
 
     int mEndJointID = -1;
     int mChainSize = -1;

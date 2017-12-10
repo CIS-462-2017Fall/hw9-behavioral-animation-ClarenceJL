@@ -57,11 +57,24 @@ void BVHController::setActor(AActor* actor)
 void BVHController::update(double time)
 {
 	ASkeleton* skeleton = mActor->getSkeleton();
-
 	// TODO: Update transforms at each Skeleton joint given spline motion data in mRootMotion and mMotion for value of time. 
 
+    //update local transformation
+    //get root position
+    vec3 root_trans = mRootMotion.getValue(time);
+    skeleton->getRootNode()->setLocalTranslation(root_trans);
 
-
+    //get each joint's local rotational transformation
+	
+    for(auto m:mMotion){
+        int joint_idx = m.first;
+        quat joint_rot_quat = m.second.getCachedValue(time);
+        mat3 joint_rot = joint_rot_quat.ToRotation();
+        skeleton->getJointByID(joint_idx)->setLocalRotation(joint_rot);
+    }
+	
+    //update global transformation
+    skeleton->update();
 
 
 }
