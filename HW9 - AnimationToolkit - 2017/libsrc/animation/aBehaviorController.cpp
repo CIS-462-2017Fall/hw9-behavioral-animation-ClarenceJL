@@ -34,12 +34,11 @@ double BehaviorController::KAlignment = 1.0;
 double BehaviorController::KCohesion = 1.0;  
 
 //Behavior Combination Parameter
-/*
 double BehaviorController::Cseparation = 2;
 double BehaviorController::Calignment = 0.6;
-double BehaviorController::Ccohesion = 1.8;
+double BehaviorController::Ccohesion = 1.5;
 double BehaviorController::Carrival = 2.0;
-*/
+
 
 const double M2_PI = M_PI * 2.0;
 
@@ -180,12 +179,11 @@ void BehaviorController::control(double deltaT)
 		*/
 
         m_vd = m_Vdesired.Length();
-		m_thetad = atan2(m_Vdesired[2], m_Vdesired[0]);
+		m_thetad = atan2(m_Vdesired[_Z], m_Vdesired[_X]);
+
 		double dtheta = m_thetad  - m_state[ORI][_Y];
 		ClampAngle(dtheta);
-		if (dtheta < 1e-15) {
-			int x = 1;
-		}
+
         double force_z = gMass * gVelKv * (m_vd - m_VelB[_Z]);
         double torque_y = gInertia * (- gOriKv * m_AVelB[_Y] + gOriKp * dtheta);
         Truncate(force_z, -gMaxForce, gMaxForce);
@@ -194,10 +192,12 @@ void BehaviorController::control(double deltaT)
         m_torque[1] = torque_y;
 
 		// when agent desired agent velocity and actual velocity < 2.0 then stop moving
-		if (m_vd < 2.0 &&  m_state[VEL][_Z] < 2.0)
+		if (m_vd < 2.0 && m_state[VEL][_Z] < 2.0 )
 		{
 			m_force[2] = 0.0;
 			m_torque[1] = 0.0;
+			m_state[VEL][_Z] = 0.0;
+			m_state[AVEL][_Y] = 0.0;
 		}
 	}
 	else
@@ -331,8 +331,6 @@ void BehaviorController::setTarget(AJoint& target)
 		BehaviorType index = (BehaviorType) i;
 		m_BehaviorList[index]->setTarget(m_pBehaviorTarget);
 	}
-
-
 
 }
 

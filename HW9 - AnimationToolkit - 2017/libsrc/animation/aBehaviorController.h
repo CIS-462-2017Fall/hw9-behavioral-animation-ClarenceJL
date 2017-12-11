@@ -180,10 +180,10 @@ public:
     static double KCohesion;
 
 	//Behavior Combination Parameter
-	//static double Cseparation;
-	//static double Calignment;
-	//static double Ccohesion;
-	//static double Carrival;
+	static double Cseparation;
+	static double Calignment;
+	static double Ccohesion;
+	static double Carrival;
 
 };
 
