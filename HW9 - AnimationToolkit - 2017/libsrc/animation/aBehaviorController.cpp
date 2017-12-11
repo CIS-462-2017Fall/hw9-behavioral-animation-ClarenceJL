@@ -33,6 +33,14 @@ double BehaviorController::KSeparation = 12000.0;
 double BehaviorController::KAlignment = 1.0;  
 double BehaviorController::KCohesion = 1.0;  
 
+//Behavior Combination Parameter
+/*
+double BehaviorController::Cseparation = 2;
+double BehaviorController::Calignment = 0.6;
+double BehaviorController::Ccohesion = 1.8;
+double BehaviorController::Carrival = 2.0;
+*/
+
 const double M2_PI = M_PI * 2.0;
 
 BehaviorController::BehaviorController() 

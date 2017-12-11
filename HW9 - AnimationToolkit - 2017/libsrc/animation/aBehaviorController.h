@@ -178,6 +178,13 @@ public:
     static double KSeparation;
     static double KAlignment;
     static double KCohesion;
+
+	//Behavior Combination Parameter
+	//static double Cseparation;
+	//static double Calignment;
+	//static double Ccohesion;
+	//static double Carrival;
+
 };
 
 #endif
